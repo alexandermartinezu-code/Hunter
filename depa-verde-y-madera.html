@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
 <style>
-/* Layout: plano a la izquierda (sticky en escritorio), notas y paleta a la derecha. Un solo selector de escritorio sobre el plano. */
+/* Layout: plano a escala (1 unidad = 1 cm) a la izquierda, sticky en escritorio; notas, medidas y paleta a la derecha. */
 :root {
   --bg: #f1f1ee;
   --fg: #1d2421;
@@ -12,19 +12,20 @@
   --accent: #1f4a3d;
   --accent-fg: #ffffff;
   --sheet: #f7f6f2;
+  --bad: #b3261e;
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #131815; --fg: #e8ebe7; --muted: #9aa59f; --card: #1a211d; --line: #2c3631;
-    --accent: #6fb596; --accent-fg: #0f1a15; --sheet: #e9e8e2;
+    --accent: #6fb596; --accent-fg: #0f1a15; --sheet: #e9e8e2; --bad: #ff8a80;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #131815; --fg: #e8ebe7; --muted: #9aa59f; --card: #1a211d; --line: #2c3631;
-  --accent: #6fb596; --accent-fg: #0f1a15; --sheet: #e9e8e2;
+  --accent: #6fb596; --accent-fg: #0f1a15; --sheet: #e9e8e2; --bad: #ff8a80;
   color-scheme: dark;
 }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55;
@@ -33,7 +34,7 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font-body); f
 h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.1; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
 h2 { font-family: var(--font-display); font-size: 1.05rem; margin: 0 0 10px; }
 .lede { color: var(--muted); max-width: 62ch; margin: 8px 0 0; }
-.layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
 .plan-col { position: sticky; top: 16px; display: grid; gap: 12px; }
 .toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--card); gap: 3px; flex-wrap: wrap; }
 .toggle button { font: inherit; font-size: 13px; font-weight: 500; color: var(--fg); background: transparent; border: 0; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
@@ -50,6 +51,10 @@ h2 { font-family: var(--font-display); font-size: 1.05rem; margin: 0 0 10px; }
 .sw b { display: block; font-weight: 600; }
 .sw span { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 ul.notes { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
+table.m { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+table.m th, table.m td { text-align: left; padding: 7px 8px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.m th { font-weight: 500; color: var(--muted); }
+.bad { color: var(--bad); font-weight: 600; }
 .theme-btn { justify-self: start; font: inherit; font-size: 12px; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
 @media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } .plan-col { position: static; } }
 </style>
@@ -57,176 +62,221 @@ ul.notes { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
 <div class="wrap">
   <header>
     <h1>Tu depa en verde y madera</h1>
-    <p class="lede">Vista desde arriba con la paleta aplicada: pared verde, madera nogal, textiles crema y tu escritorio en L gris claro. Cambia dónde lo pones y compara.</p>
+    <p class="lede">Plano a escala del apartamento de 45.90 m², con la paleta aplicada. La recámara es de 2.85 × 2.83 m, así que el escritorio en L va en la sala.</p>
   </header>
 
   <div class="layout">
     <div class="plan-col">
       <div class="toggle" role="group" aria-label="Ubicación del escritorio">
-        <button type="button" id="btn-rec" aria-pressed="true">Escritorio en la recámara</button>
-        <button type="button" id="btn-sala" aria-pressed="false">Escritorio en la sala</button>
+        <button type="button" id="btn-sala" aria-pressed="true">Escritorio en la sala</button>
+        <button type="button" id="btn-rec" aria-pressed="false">Probar en la recámara</button>
       </div>
       <div class="sheet">
-        <svg viewBox="30 22 550 714" role="img" aria-label="Plano del departamento visto desde arriba: cocina y comedor arriba, sala al centro con sofá en L frente a una pared verde, y recámara abajo con cama y escritorio en L gris claro.">
+        <svg viewBox="-70 -50 690 905" role="img" aria-label="Plano a escala: cocina y comedor arriba, sala al centro con sofá, TV sobre pared verde y escritorio en L en la pared derecha; recámara abajo de 2.85 por 2.83 metros con la cama centrada.">
           <defs>
-            <pattern id="planks" width="90" height="28" patternUnits="userSpaceOnUse">
-              <rect width="90" height="28" fill="#a7a6a1"/>
-              <line x1="0" y1="14" x2="90" y2="14" stroke="#8d8c87" stroke-width="1"/>
-              <line x1="0" y1="0" x2="90" y2="0" stroke="#8d8c87" stroke-width="1"/>
-              <line x1="30" y1="0" x2="30" y2="14" stroke="#8d8c87" stroke-width="1"/>
-              <line x1="70" y1="14" x2="70" y2="28" stroke="#8d8c87" stroke-width="1"/>
+            <pattern id="planks" width="120" height="40" patternUnits="userSpaceOnUse">
+              <rect width="120" height="40" fill="#a7a6a1"/>
+              <line x1="0" y1="20" x2="120" y2="20" stroke="#8d8c87" stroke-width="1"/>
+              <line x1="0" y1="0" x2="120" y2="0" stroke="#8d8c87" stroke-width="1"/>
+              <line x1="40" y1="0" x2="40" y2="20" stroke="#8d8c87" stroke-width="1"/>
+              <line x1="100" y1="20" x2="100" y2="40" stroke="#8d8c87" stroke-width="1"/>
             </pattern>
-            <pattern id="tile" width="14" height="14" patternUnits="userSpaceOnUse">
-              <rect width="14" height="14" fill="#8a8e91"/>
-              <path d="M0 0H14V14" fill="none" stroke="#767a7d" stroke-width="1"/>
+            <pattern id="tile" width="25" height="25" patternUnits="userSpaceOnUse">
+              <rect width="25" height="25" fill="#8a8e91"/>
+              <path d="M0 0H25V25" fill="none" stroke="#767a7d" stroke-width="1"/>
+            </pattern>
+            <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="10" height="10" fill="#e3e0d8"/><line x1="0" y1="0" x2="0" y2="10" stroke="#8d897f" stroke-width="2"/>
             </pattern>
           </defs>
 
-          <!-- Piso general -->
-          <rect x="90" y="40" width="470" height="680" fill="url(#planks)"/>
+          <!-- Piso: sala, comedor y cocina -->
+          <rect x="0" y="0" width="546" height="527" fill="url(#planks)"/>
+          <!-- Piso: recámara -->
+          <rect x="77" y="527" width="288" height="283" fill="url(#planks)"/>
 
           <!-- Balcones -->
           <g fill="#c4c1ba" stroke="#fff" stroke-width="3">
-            <rect x="42" y="60" width="48" height="170"/>
-            <rect x="42" y="290" width="48" height="170"/>
+            <rect x="-45" y="8" width="45" height="220"/>
+            <rect x="-45" y="296" width="45" height="228"/>
+            <rect x="0" y="541" width="70" height="269"/>
           </g>
-          <text x="66" y="150" font-size="10" fill="#4a4a46" text-anchor="middle" transform="rotate(-90 66 150)">BALCÓN</text>
-          <text x="66" y="380" font-size="10" fill="#4a4a46" text-anchor="middle" transform="rotate(-90 66 380)">BALCÓN</text>
+          <rect x="0" y="745" width="70" height="65" fill="url(#hatch)" stroke="#8d897f"/>
 
           <!-- Alfombras -->
-          <rect x="118" y="335" width="222" height="122" rx="4" fill="#c9bfae"/>
-          <rect x="244" y="612" width="182" height="104" rx="4" fill="#c9bfae"/>
+          <rect x="55" y="330" width="182" height="160" rx="4" fill="#c9bfae"/>
+          <rect x="100" y="560" width="240" height="240" rx="4" fill="#c9bfae" opacity=".0"/>
 
-          <!-- Servicios: bloque derecho -->
-          <rect x="430" y="250" width="130" height="470" fill="#f3f1ec"/>
-          <rect x="438" y="258" width="114" height="80" fill="url(#planks)"/>
-          <rect x="438" y="346" width="114" height="130" fill="url(#tile)"/>
-          <rect x="438" y="484" width="114" height="228" fill="url(#planks)"/>
-          <rect x="438" y="484" width="114" height="228" fill="#000" opacity=".12"/>
-          <!-- Baño: piezas -->
-          <rect x="444" y="352" width="52" height="62" fill="#c3c9cd" stroke="#8c9296"/>
-          <ellipse cx="530" cy="440" rx="14" ry="18" fill="#f3f1ec" stroke="#9aa0a4"/>
-          <rect x="520" y="352" width="26" height="22" rx="4" fill="#f3f1ec" stroke="#9aa0a4"/>
-          <!-- Entrada / lavandería -->
-          <rect x="446" y="266" width="44" height="30" fill="#e6e3dc" stroke="#9b978d"/>
-          <circle cx="468" cy="281" r="10" fill="none" stroke="#9b978d"/>
-          <!-- Closet: barras y repisa -->
-          <rect x="440" y="490" width="8" height="216" fill="#5a3e2b"/>
-          <line x1="466" y1="500" x2="466" y2="700" stroke="#b08d4c" stroke-width="3"/>
-          <g fill="#e4dccb" stroke="#bdb39e" stroke-width=".8">
-            <rect x="476" y="500" width="58" height="12" rx="3"/><rect x="476" y="530" width="58" height="12" rx="3"/>
-            <rect x="476" y="560" width="58" height="12" rx="3"/><rect x="476" y="590" width="58" height="12" rx="3"/>
+          <!-- Bloque de servicios (derecha) -->
+          <rect x="365" y="276" width="181" height="534" fill="#f3f1ec"/>
+          <rect x="373" y="284" width="165" height="153" fill="url(#planks)"/>
+          <rect x="373" y="284" width="165" height="153" fill="#000" opacity=".1"/>
+          <rect x="373" y="463" width="165" height="222" fill="url(#tile)"/>
+          <rect x="373" y="693" width="165" height="109" fill="url(#planks)"/>
+          <rect x="373" y="693" width="165" height="109" fill="#000" opacity=".12"/>
+          <!-- Lavandería -->
+          <rect x="388" y="376" width="45" height="58" fill="#c3c9cd" stroke="#8c9296"/>
+          <rect x="467" y="376" width="57" height="58" fill="#e6e3dc" stroke="#9b978d"/>
+          <circle cx="495" cy="405" r="18" fill="none" stroke="#9b978d"/>
+          <!-- Baño -->
+          <circle cx="502" cy="488" r="18" fill="#f3f1ec" stroke="#9aa0a4"/>
+          <ellipse cx="510" cy="565" rx="22" ry="36" fill="#f3f1ec" stroke="#9aa0a4"/>
+          <rect x="380" y="615" width="70" height="66" fill="#c3c9cd" stroke="#8c9296"/>
+          <!-- Closet -->
+          <line x1="380" y1="705" x2="530" y2="705" stroke="#b08d4c" stroke-width="4"/>
+          <g fill="#e4dccb" stroke="#bdb39e" stroke-width="1">
+            <rect x="388" y="712" width="12" height="60" rx="3"/><rect x="408" y="712" width="12" height="60" rx="3"/>
+            <rect x="428" y="712" width="12" height="60" rx="3"/><rect x="448" y="712" width="12" height="60" rx="3"/>
+            <rect x="468" y="712" width="12" height="60" rx="3"/><rect x="488" y="712" width="12" height="60" rx="3"/>
           </g>
 
           <!-- Muros -->
-          <g fill="#f3f1ec" stroke="#cfcbc2" stroke-width=".6">
-            <rect x="82" y="32" width="486" height="8"/>
-            <rect x="560" y="32" width="8" height="696"/>
-            <rect x="82" y="720" width="486" height="8"/>
-            <rect x="82" y="32" width="8" height="28"/>
-            <rect x="82" y="230" width="8" height="12"/>
-            <rect x="90" y="240" width="36" height="50"/>
-            <rect x="82" y="290" width="8" height="1"/>
-            <rect x="82" y="460" width="8" height="60"/>
-            <rect x="82" y="690" width="8" height="38"/>
-            <rect x="410" y="476" width="20" height="8"/>
-            <rect x="430" y="246" width="130" height="4"/>
+          <g fill="#f3f1ec" stroke="#cfcbc2" stroke-width="1">
+            <rect x="-8" y="-8" width="562" height="8"/>
+            <rect x="546" y="-8" width="8" height="250"/>
+            <rect x="546" y="336" width="8" height="482"/>
+            <rect x="77" y="810" width="477" height="8"/>
+            <rect x="-8" y="-8" width="8" height="16"/>
+            <rect x="-8" y="228" width="8" height="68"/>
+            <rect x="0" y="230" width="74" height="60" fill="url(#hatch)"/>
+            <rect x="-8" y="523" width="85" height="8"/>
+            <rect x="77" y="527" width="8" height="283"/>
+            <rect x="365" y="527" width="8" height="283"/>
+            <rect x="365" y="276" width="8" height="251"/>
           </g>
-          <!-- Pared de acento verde (pared del TV) -->
-          <rect x="90" y="476" width="260" height="8" fill="#1f4a3d"/>
-          <!-- Muro de la recámara: desde x=350 abierto para puerta -->
-          <rect x="430" y="476" width="130" height="8" fill="#f3f1ec" stroke="#cfcbc2" stroke-width=".6"/>
-          <!-- Puertas corredizas de vidrio -->
-          <g stroke="#79b5d8" stroke-width="3">
-            <line x1="86" y1="60" x2="86" y2="230"/>
-            <line x1="86" y1="290" x2="86" y2="460"/>
-            <line x1="86" y1="520" x2="86" y2="690"/>
+          <!-- Pared verde: muro del TV -->
+          <rect x="77" y="523" width="198" height="8" fill="#1f4a3d"/>
+          <!-- Puertas corredizas -->
+          <g stroke="#79b5d8" stroke-width="5">
+            <line x1="-2" y1="8" x2="-2" y2="228"/>
+            <line x1="-2" y1="296" x2="-2" y2="524"/>
+            <line x1="81" y1="560" x2="81" y2="780"/>
           </g>
-          <!-- Puerta recámara -->
-          <line x1="410" y1="480" x2="410" y2="540" stroke="#5a3e2b" stroke-width="3"/>
-          <path d="M350 480 A60 60 0 0 0 410 540" fill="none" stroke="#8d8c87" stroke-dasharray="3 3"/>
-          <!-- Puertas laterales de servicios -->
-          <rect x="426" y="364" width="8" height="40" fill="#5a3e2b"/>
-          <rect x="426" y="600" width="8" height="50" fill="#5a3e2b"/>
+          <!-- Puerta de la recámara -->
+          <line x1="361" y1="527" x2="361" y2="617" stroke="#5a3e2b" stroke-width="4"/>
+          <path d="M275 527 A90 90 0 0 0 365 617" fill="none" stroke="#8d8c87" stroke-width="2" stroke-dasharray="6 5"/>
+          <!-- Puerta de entrada -->
+          <line x1="546" y1="242" x2="546" y2="336" stroke="#5a3e2b" stroke-width="6"/>
 
           <!-- Cocina -->
-          <rect x="500" y="40" width="60" height="190" fill="#f3f1ec" stroke="#cfcbc2"/>
-          <rect x="506" y="58" width="48" height="36" fill="#d9dcdd" stroke="#9aa0a4"/>
-          <rect x="506" y="124" width="48" height="52" fill="#2b2b2b"/>
-          <g fill="none" stroke="#b08d4c" stroke-width="1.6"><circle cx="518" cy="136" r="6"/><circle cx="542" cy="136" r="6"/><circle cx="518" cy="162" r="6"/><circle cx="542" cy="162" r="6"/></g>
-          <rect x="404" y="78" width="56" height="152" fill="#f3f1ec" stroke="#cfcbc2"/>
-          <rect x="404" y="78" width="12" height="152" fill="#5a3e2b"/>
-          <circle cx="384" cy="124" r="10" fill="#5a3e2b"/>
-          <circle cx="384" cy="184" r="10" fill="#5a3e2b"/>
+          <rect x="476" y="0" width="70" height="234" fill="#f3f1ec" stroke="#cfcbc2"/>
+          <rect x="482" y="10" width="58" height="62" fill="#2b2b2b"/>
+          <g fill="none" stroke="#b08d4c" stroke-width="2.5"><circle cx="497" cy="26" r="8"/><circle cx="525" cy="26" r="8"/><circle cx="497" cy="56" r="8"/><circle cx="525" cy="56" r="8"/></g>
+          <rect x="285" y="0" width="90" height="60" fill="#f3f1ec" stroke="#cfcbc2"/>
+          <rect x="305" y="10" width="50" height="38" fill="#d9dcdd" stroke="#9aa0a4"/>
+          <rect x="291" y="76" width="80" height="114" fill="#f3f1ec" stroke="#cfcbc2"/>
+          <rect x="291" y="76" width="14" height="114" fill="#5a3e2b"/>
+          <circle cx="257" cy="102" r="16" fill="#5a3e2b"/>
+          <circle cx="257" cy="160" r="16" fill="#5a3e2b"/>
 
           <!-- Comedor -->
-          <circle cx="240" cy="140" r="64" fill="none" stroke="#b08d4c" stroke-width="1.2" stroke-dasharray="4 4"/>
-          <circle cx="240" cy="140" r="52" fill="#a9835b"/>
-          <circle cx="240" cy="140" r="7" fill="#6b7a55"/>
-          <circle cx="240" cy="72" r="14" fill="#e4dccb" stroke="#bdb39e"/>
-          <circle cx="240" cy="208" r="14" fill="#6b7a55"/>
-          <circle cx="172" cy="140" r="14" fill="#6b7a55"/>
-          <circle cx="308" cy="140" r="14" fill="#e4dccb" stroke="#bdb39e"/>
+          <circle cx="148" cy="125" r="72" fill="none" stroke="#b08d4c" stroke-width="2" stroke-dasharray="7 6"/>
+          <circle cx="148" cy="125" r="55" fill="#a9835b"/>
+          <circle cx="148" cy="125" r="9" fill="#6b7a55"/>
+          <circle cx="148" cy="52" r="20" fill="#e4dccb" stroke="#bdb39e"/>
+          <circle cx="148" cy="198" r="20" fill="#6b7a55"/>
+          <circle cx="76" cy="125" r="20" fill="#6b7a55"/>
+          <circle cx="220" cy="125" r="20" fill="#e4dccb" stroke="#bdb39e"/>
 
-          <!-- Sala: TV + sofá en L + mesa -->
-          <rect x="140" y="452" width="172" height="20" rx="2" fill="#5a3e2b"/>
-          <rect x="176" y="448" width="100" height="4" fill="#161616"/>
-          <rect x="130" y="290" width="190" height="70" rx="10" fill="#e4dccb" stroke="#bdb39e"/>
-          <rect x="130" y="290" width="190" height="16" rx="8" fill="#d3c9b4"/>
-          <rect x="130" y="358" width="74" height="64" rx="10" fill="#e4dccb" stroke="#bdb39e"/>
-          <rect x="146" y="312" width="38" height="30" rx="6" fill="#6b7a55"/>
-          <rect x="268" y="312" width="38" height="30" rx="6" fill="#1f4a3d"/>
-          <circle cx="262" cy="404" r="24" fill="#a9835b"/>
-          <circle cx="262" cy="404" r="16" fill="none" stroke="#7d5f3f"/>
-          <circle cx="338" cy="326" r="7" fill="#b08d4c"/>
-          <g>
-            <circle cx="112" cy="268" r="14" fill="#6b7a55"/><circle cx="108" cy="264" r="7" fill="#8a9a70"/>
-            <circle cx="122" cy="452" r="13" fill="#6b7a55"/><circle cx="118" cy="448" r="6" fill="#8a9a70"/>
-          </g>
+          <!-- Sala: TV, sofá, pouf -->
+          <rect x="88" y="490" width="140" height="35" rx="2" fill="#5a3e2b"/>
+          <rect x="118" y="484" width="80" height="6" fill="#161616"/>
+          <rect x="70" y="305" width="150" height="80" rx="12" fill="#e4dccb" stroke="#bdb39e"/>
+          <rect x="70" y="305" width="150" height="20" rx="10" fill="#d3c9b4"/>
+          <rect x="80" y="330" width="40" height="40" rx="8" fill="#6b7a55"/>
+          <rect x="170" y="330" width="40" height="40" rx="8" fill="#1f4a3d"/>
+          <circle cx="145" cy="440" r="22" fill="#a9835b"/>
+          <circle cx="145" cy="440" r="14" fill="none" stroke="#7d5f3f" stroke-width="2"/>
+          <circle cx="22" cy="500" r="16" fill="#6b7a55"/><circle cx="17" cy="495" r="8" fill="#8a9a70"/>
+          <circle cx="248" cy="340" r="8" fill="#b08d4c"/>
 
           <!-- Recámara: cortina, cama, burós -->
-          <rect x="92" y="520" width="6" height="170" fill="#e4dccb"/>
-          <rect x="272" y="566" width="128" height="152" rx="4" fill="#efe9dc" stroke="#bdb39e"/>
-          <rect x="272" y="566" width="128" height="56" fill="#6b7a55"/>
-          <rect x="284" y="684" width="50" height="24" rx="6" fill="#fbfaf6" stroke="#cfc8b6"/>
-          <rect x="338" y="684" width="50" height="24" rx="6" fill="#fbfaf6" stroke="#cfc8b6"/>
-          <rect x="266" y="708" width="140" height="12" fill="#1f4a3d"/>
-          <rect x="238" y="688" width="30" height="30" fill="#5a3e2b"/>
-          <rect x="404" y="692" width="22" height="26" fill="#5a3e2b"/>
-          <circle cx="253" cy="703" r="7" fill="#b08d4c"/>
-          <circle cx="415" cy="705" r="6" fill="#b08d4c"/>
-          <circle cx="180" cy="672" r="12" fill="#6b7a55"/><circle cx="176" cy="668" r="6" fill="#8a9a70"/>
+          <rect x="85" y="560" width="7" height="220" fill="#e4dccb"/>
+          <rect x="146" y="612" width="150" height="190" rx="5" fill="#efe9dc" stroke="#bdb39e"/>
+          <rect x="146" y="612" width="150" height="62" fill="#6b7a55"/>
+          <rect x="156" y="762" width="62" height="30" rx="8" fill="#fbfaf6" stroke="#cfc8b6"/>
+          <rect x="224" y="762" width="62" height="30" rx="8" fill="#fbfaf6" stroke="#cfc8b6"/>
+          <rect x="140" y="796" width="162" height="12" fill="#1f4a3d"/>
+          <rect x="95" y="757" width="46" height="45" fill="#5a3e2b"/>
+          <rect x="301" y="757" width="46" height="45" fill="#5a3e2b"/>
+          <circle cx="118" cy="780" r="10" fill="#b08d4c"/>
+          <circle cx="324" cy="780" r="10" fill="#b08d4c"/>
+          <circle cx="112" cy="560" r="16" fill="#6b7a55"/><circle cx="107" cy="555" r="8" fill="#8a9a70"/>
 
-          <!-- Escritorio en L: recámara -->
-          <g id="desk-rec">
-            <path d="M96 490 H218 V532 H138 V612 H96 Z" fill="#d4d6d8" stroke="#9ea2a5" stroke-width="1.4"/>
-            <rect x="130" y="494" width="44" height="4" fill="#161616"/>
-            <rect x="100" y="552" width="4" height="30" fill="#161616"/>
-            <circle cx="176" cy="566" r="14" fill="#3a3a38"/>
-          </g>
           <!-- Escritorio en L: sala -->
-          <g id="desk-sala" hidden>
-            <path d="M330 256 H426 V380 H384 V298 H330 Z" fill="#d4d6d8" stroke="#9ea2a5" stroke-width="1.4"/>
-            <rect x="388" y="300" width="4" height="40" fill="#161616"/>
-            <circle cx="354" cy="326" r="14" fill="#3a3a38"/>
+          <g id="desk-sala">
+            <path d="M235 290 H365 V440 H305 V350 H235 Z" fill="#d4d6d8" stroke="#8e9396" stroke-width="2"/>
+            <rect x="262" y="296" width="52" height="6" fill="#161616"/>
+            <rect x="351" y="330" width="6" height="52" fill="#161616"/>
+            <circle cx="268" cy="395" r="21" fill="#3a3a38"/>
+          </g>
+          <!-- Escritorio en L: recámara (prueba) -->
+          <g id="desk-rec" hidden>
+            <path d="M85 535 H220 V595 H145 V675 H85 Z" fill="#d4d6d8" fill-opacity=".92" stroke="#b3261e" stroke-width="3" stroke-dasharray="9 6"/>
+            <circle cx="190" cy="640" r="21" fill="#3a3a38" stroke="#b3261e" stroke-width="3"/>
+            <text x="92" y="722" font-size="17" font-weight="700" fill="#b3261e" stroke="#fff" stroke-opacity=".85" stroke-width="4" paint-order="stroke">NO CABE: sin silla ni paso</text>
+          </g>
+
+          <!-- Cotas -->
+          <g stroke="#4a4a46" stroke-width="1.5" fill="none">
+            <line x1="0" y1="-26" x2="546" y2="-26"/><line x1="0" y1="-32" x2="0" y2="-20"/><line x1="546" y1="-32" x2="546" y2="-20"/>
+            <line x1="77" y1="832" x2="365" y2="832"/><line x1="77" y1="826" x2="77" y2="838"/><line x1="365" y1="826" x2="365" y2="838"/>
+            <line x1="-58" y1="0" x2="-58" y2="518"/><line x1="-64" y1="0" x2="-52" y2="0"/><line x1="-64" y1="518" x2="-52" y2="518"/>
+            <line x1="-58" y1="531" x2="-58" y2="814"/><line x1="-64" y1="531" x2="-52" y2="531"/><line x1="-64" y1="814" x2="-52" y2="814"/>
+          </g>
+          <g font-size="16" font-weight="600" fill="#2a2a27" text-anchor="middle">
+            <text x="273" y="-33">5.46 m</text>
+            <text x="221" y="852">2.85 m</text>
+            <text x="-66" y="262" transform="rotate(-90 -66 262)">5.18 m</text>
+            <text x="-66" y="672" transform="rotate(-90 -66 672)">2.83 m</text>
+          </g>
+          <!-- Escala 1 m -->
+          <g transform="translate(400 838)">
+            <line x1="0" y1="0" x2="100" y2="0" stroke="#2a2a27" stroke-width="4"/>
+            <text x="50" y="-8" font-size="14" text-anchor="middle" fill="#2a2a27">1 m</text>
           </g>
 
           <!-- Rótulos -->
-          <g font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="1.2" fill="#1f1f1d" stroke="#ffffff" stroke-opacity=".75" stroke-width="3" paint-order="stroke" text-anchor="middle">
-            <text x="240" y="236">COMEDOR</text>
-            <text x="530" y="212">COCINA</text>
-            <text x="232" y="438">SALA</text>
-            <text x="165" y="506">RECÁMARA</text>
-            <text x="495" y="468">BAÑO</text>
-            <text x="495" y="548">WALK-IN CLOSET</text>
-            <text x="495" y="278">ENTRADA</text>
+          <g font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" letter-spacing="1.5" fill="#1f1f1d" stroke="#ffffff" stroke-opacity=".75" stroke-width="4" paint-order="stroke" text-anchor="middle">
+            <text x="150" y="232">COMEDOR</text>
+            <text x="440" y="225">COCINA</text>
+            <text x="165" y="275">SALA</text>
+            <text x="220" y="600">RECÁMARA</text>
+            <text x="455" y="350">LAVANDERÍA</text>
+            <text x="455" y="650">BAÑO</text>
+            <text x="455" y="790">CLOSET</text>
           </g>
         </svg>
       </div>
-      <p class="caption">Plano aproximado, redibujado desde el folleto y tus fotos. Las medidas no están a escala; sirve para decidir distribución y color, no para cortar muebles.</p>
+      <p class="caption">Medidas tomadas del plano del apartamento (APTO MOD. 45.90 m²). Los muebles son estimados: cama 150 × 190 cm y escritorio en L de 130 × 150 cm con 60 cm de fondo. Dime las medidas reales de los tuyos y lo ajusto.</p>
     </div>
 
     <div class="stack">
+      <section class="panel" aria-labelledby="med">
+        <h2 id="med">Por qué no cabe en la recámara</h2>
+        <table class="m">
+          <tbody>
+            <tr><th>Recámara</th><td>2.85 × 2.83 m</td></tr>
+            <tr><th>Cama (estimada)</th><td>1.50 m de ancho, centrada: quedan <b>68 cm</b> a cada lado</td></tr>
+            <tr><th>Puerta</th><td>Abre hacia adentro y barre 90 cm junto al pie de la cama</td></tr>
+            <tr><th>Escritorio en L</th><td>Necesita unos 60 cm de fondo por brazo más 70 cm para la silla</td></tr>
+            <tr><th>Resultado</th><td class="bad">Pegado a la pared cabe, pero sin lugar para sentarte</td></tr>
+          </tbody>
+        </table>
+        <p class="caption" style="margin-top:10px">Pulsa «Probar en la recámara» para verlo en el plano.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="why">
+        <h2 id="why">Cómo queda la distribución</h2>
+        <ul class="notes">
+          <li><b>Escritorio en la pared derecha de la sala.</b> Es el único tramo libre de pared. Queda lejos de la puerta de entrada y de los dos accesos a los balcones.</li>
+          <li><b>Sofá de dos plazas de 150 cm.</b> Un sofá en L ya no entra con el escritorio. La sala mide unos 3.6 × 2.4 m.</li>
+          <li><b>Pared verde en el muro del TV.</b> Es la que ves desde el sofá y le da calidez al piso gris.</li>
+          <li><b>Cama centrada con cabecero verde.</b> Los burós de 45 cm caben, y el ventanal queda libre para cortinas de lino.</li>
+          <li><b>Comedor redondo de 110 cm.</b> Deja 60 cm de paso hasta la isla.</li>
+        </ul>
+      </section>
+
       <section class="panel" aria-labelledby="pal">
         <h2 id="pal">Paleta aplicada</h2>
         <div class="swatches">
@@ -236,30 +286,10 @@ ul.notes { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
           <div class="sw"><div class="chip" style="background:#a9835b"></div><div><b>Roble</b><span>#A9835B · mesas</span></div></div>
           <div class="sw"><div class="chip" style="background:#5a3e2b"></div><div><b>Nogal</b><span>#5A3E2B · mueble TV, burós</span></div></div>
           <div class="sw"><div class="chip" style="background:#6b7a55"></div><div><b>Oliva</b><span>#6B7A55 · cojines, plantas</span></div></div>
-          <div class="sw"><div class="chip" style="background:#c9bfae"></div><div><b>Arena</b><span>#C9BFAE · alfombras</span></div></div>
+          <div class="sw"><div class="chip" style="background:#c9bfae"></div><div><b>Arena</b><span>#C9BFAE · alfombra</span></div></div>
           <div class="sw"><div class="chip" style="background:#b08d4c"></div><div><b>Latón</b><span>#B08D4C · lámparas</span></div></div>
           <div class="sw"><div class="chip" style="background:#d4d6d8"></div><div><b>Gris claro</b><span>#D4D6D8 · tu escritorio</span></div></div>
         </div>
-      </section>
-
-      <section class="panel" aria-labelledby="why">
-        <h2 id="why">Por qué está así</h2>
-        <ul class="notes">
-          <li><b>Pared verde en el muro del TV.</b> Es la que ves al sentarte y la única donde el color oscuro no le quita luz a los balcones.</li>
-          <li><b>Sofá en L de espaldas al comedor.</b> Separa la sala del comedor sin muebles extra y deja el paso libre hacia los balcones.</li>
-          <li><b>Mesa redonda bajo una lámpara de latón.</b> Cabe junto a la isla sin chocar con las puertas corredizas.</li>
-          <li><b>Cama con cabecero verde contra el muro ciego.</b> Deja el ventanal de la recámara libre para cortinas de lino.</li>
-          <li><b>Escritorio en la recámara.</b> Queda en la esquina junto a la ventana y se cierra con la puerta cuando termines de trabajar. En la sala gana espacio de guardado pero compite con el sofá por la luz del balcón.</li>
-        </ul>
-      </section>
-
-      <section class="panel" aria-labelledby="next">
-        <h2 id="next">Lo que ya tienes y lo que falta</h2>
-        <ul class="notes">
-          <li><b>Ya tienes:</b> cama y escritorio en L gris claro. El gris claro combina con el piso y con los blancos cálidos.</li>
-          <li><b>Compra primero:</b> pintura (hueso y verde), sofá en L crema, alfombra y cortinas de lino.</li>
-          <li><b>Después:</b> mesa redonda y sillas, mueble para TV, lámparas, plantas y burós.</li>
-        </ul>
       </section>
       <button class="theme-btn" id="theme" type="button">Cambiar tema claro / oscuro</button>
     </div>
